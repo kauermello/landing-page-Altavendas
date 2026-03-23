@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.abacatepay.com)",
+      "Bash(npm install:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(where npm:*)",
+      "Bash(command -v npm)",
+      "Bash(echo \"/** @type {import\\(''next''\\).NextConfig} */:*)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /PID 620 /F)",
+      "Bash(cmd.exe /c \"taskkill /PID 620 /F\")",
+      "Bash(cmd.exe /c \"taskkill /F /PID 620\")",
+      "Bash(cmd.exe /c \"wmic process where ProcessId=620 get Name,CommandLine 2>&1\")",
+      "Bash(cmd.exe /c \"netstat -ano | findstr :3000\")",
+      "Bash(cmd.exe /c \"taskkill /F /IM node.exe\")",
+      "Read(//c/Users/kauer/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/d33cb889-e6c7-477b-9cdd-9cd70fb29d65/63ae575d-9b82-48f5-9c35-9c08969dd122/skills/docx/**)",
+      "Bash(pandoc \"C:\\\\Users\\\\kauer\\\\Downloads\\\\roteiro AltaVendas \\(1\\).docx\" -o output.md)",
+      "Bash(python \"C:\\\\Users\\\\kauer\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\d33cb889-e6c7-477b-9cdd-9cd70fb29d65\\\\63ae575d-9b82-48f5-9c35-9c08969dd122\\\\skills\\\\docx\\\\scripts\\\\office\\\\unpack.py\" \"C:\\\\Users\\\\kauer\\\\Downloads\\\\roteiro AltaVendas \\(1\\).docx\" \"C:\\\\Users\\\\kauer\\\\Downloads\\\\roteiro_unpacked\")",
+      "Bash(node -e \":*)",
+      "Bash(npm list:*)"
+    ]
+  }
+}
