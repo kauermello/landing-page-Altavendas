@@ -33,7 +33,7 @@ function Slider({
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <span className="font-dm text-sm text-[#444444]">{label}</span>
-        <span className="font-syne font-bold text-base text-[#FF6B1A]">{format(value)}</span>
+        <span className="font-sora font-bold text-base text-[#FF6B1A]">{format(value)}</span>
       </div>
       <div className="relative h-2">
         <div className="absolute inset-0 bg-[#E5E5E5] rounded-full" />
@@ -108,7 +108,7 @@ export default function ROICalculator() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-[#F8F8F8] rounded-3xl border border-[#E5E5E5] p-6 md:p-10">
             {/* Sliders */}
             <div className="space-y-8">
-              <h3 className="font-syne font-bold text-lg text-[#0F0F0F]">Sua operação hoje</h3>
+              <h3 className="font-sora font-bold text-lg text-[#0F0F0F]">Sua operação hoje</h3>
 
               <Slider
                 label="Número de vendedores"
@@ -143,7 +143,7 @@ export default function ROICalculator() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-dm text-sm text-[#444444]">Melhora de conversão estimada</span>
-                  <span className="font-syne font-bold text-base text-[#FF6B1A]">{uplift}%</span>
+                  <span className="font-sora font-bold text-base text-[#FF6B1A]">{uplift}%</span>
                 </div>
                 <div className="relative h-2">
                   <div className="absolute inset-0 bg-[#E5E5E5] rounded-full" />
@@ -177,7 +177,7 @@ export default function ROICalculator() {
 
             {/* Results */}
             <div className="flex flex-col gap-5">
-              <h3 className="font-syne font-bold text-lg text-[#0F0F0F]">Seu potencial com AltaVendas</h3>
+              <h3 className="font-sora font-bold text-lg text-[#0F0F0F]">Seu potencial com AltaVendas</h3>
 
               {/* Main result */}
               <div className="bg-[#FF6B1A] rounded-2xl p-6 text-white relative overflow-hidden">
@@ -187,7 +187,7 @@ export default function ROICalculator() {
                     <TrendingUp size={16} className="text-white/80" />
                     <span className="font-dm text-sm text-white/80">Ganho adicional por ano</span>
                   </div>
-                  <p className="font-syne font-extrabold text-5xl text-white leading-none mb-1">
+                  <p className="font-sora font-extrabold text-5xl text-white leading-none mb-1">
                     {formatBRL(results.additionalAnnual)}
                   </p>
                   <p className="font-dm text-sm text-white/70">
@@ -203,7 +203,7 @@ export default function ROICalculator() {
                     <DollarSign size={14} className="text-[#888888]" />
                     <span className="font-dm text-xs text-[#888888]">Receita atual/mês</span>
                   </div>
-                  <p className="font-syne font-bold text-xl text-[#0F0F0F]">
+                  <p className="font-sora font-bold text-xl text-[#0F0F0F]">
                     {formatBRL(results.currentMonthly)}
                   </p>
                 </div>
@@ -212,7 +212,7 @@ export default function ROICalculator() {
                     <TrendingUp size={14} className="text-[#FF6B1A]" />
                     <span className="font-dm text-xs text-[#FF6B1A]">Com AltaVendas/mês</span>
                   </div>
-                  <p className="font-syne font-bold text-xl text-[#FF6B1A]">
+                  <p className="font-sora font-bold text-xl text-[#FF6B1A]">
                     {formatBRL(results.newMonthly)}
                   </p>
                 </div>

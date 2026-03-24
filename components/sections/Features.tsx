@@ -121,7 +121,7 @@ function FeatureCard({ feature }: FeatureCardProps) {
           <div className="pt-3 border-t border-[#F0F0F0] flex items-center justify-between">
             <p className="font-dm text-xs text-[#888888] italic">{feature.story}</p>
             <div className="ml-3 flex-shrink-0 text-right">
-              <p className="font-syne font-bold text-lg leading-none" style={{ color: feature.color }}>
+              <p className="font-sora font-bold text-lg leading-none" style={{ color: feature.color }}>
                 {feature.stat}
               </p>
               <p className="font-dm text-xs text-[#888888]">{feature.statLabel}</p>
