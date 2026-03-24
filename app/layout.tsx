@@ -4,21 +4,18 @@ import "./globals.css";
 
 const syne = Syne({
   subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
   variable: "--font-syne",
   display: "swap",
 });
 
 const sora = Sora({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-sora",
   display: "swap",
 });
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-dm",
   display: "swap",
 });
