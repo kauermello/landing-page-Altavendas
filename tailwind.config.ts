@@ -20,9 +20,9 @@ const config: Config = {
         success: "#22C55E",
       },
       fontFamily: {
-        syne: ["var(--font-syne)", "sans-serif"],
-        sora: ["var(--font-sora)", "sans-serif"],
-        dm: ["var(--font-dm)", "sans-serif"],
+        syne: ["Syne", "sans-serif"],
+        sora: ["Sora", "sans-serif"],
+        dm: ["DM Sans", "sans-serif"],
       },
       animation: {
         shine: "shine 3s linear infinite",
