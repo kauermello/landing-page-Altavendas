@@ -47,7 +47,7 @@ export default function FAQ() {
         <Reveal delay={1} className="mb-12">
           <h2 className="font-sora font-extrabold text-3xl md:text-4xl text-[#0F0F0F] text-center leading-tight">
             Tem dúvidas? Que bom,{" "}
-            <span className="shine-text">com certeza é um empresário de sucesso então.</span>
+            <span className="shine-text">você tem um futuro promissor.</span>
           </h2>
         </Reveal>
 
