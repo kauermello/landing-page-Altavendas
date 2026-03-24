@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowRight, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Loader2, Mail } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
@@ -33,50 +32,34 @@ function friendlyError(msg: string): string {
   return "Algo deu errado. Tente novamente em instantes.";
 }
 
-export default function CadastroPage() {
-  const router = useRouter();
+function vendedoresParaInt(v: string): number {
+  const map: Record<string, number> = {
+    "1-5": 5, "6-10": 10, "11-20": 20, "21-50": 50, "50+": 99,
+  };
+  return map[v] ?? 5;
+}
 
+function lojasParaInt(v: string): number {
+  const map: Record<string, number> = {
+    "1": 1, "2-3": 3, "4-10": 10, "10+": 99,
+  };
+  return map[v] ?? 1;
+}
+
+export default function CadastroPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [verifyEmail, setVerifyEmail] = useState("");
 
   const [form, setForm] = useState({
-    nome: "",
-    email: "",
-    senha: "",
-    telefone: "",
-    empresa: "",
-    vendedores: "",
-    lojas: "",
-    segmento: "",
+    nome: "", email: "", senha: "", telefone: "",
+    empresa: "", vendedores: "", lojas: "", segmento: "",
   });
 
   function set(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
     setError("");
-  }
-
-  // Converte faixa de vendedores para o limite inteiro (teto da faixa)
-  function vendedoresParaInt(v: string): number {
-    const map: Record<string, number> = {
-      "1-5": 5,
-      "6-10": 10,
-      "11-20": 20,
-      "21-50": 50,
-      "50+": 99,
-    };
-    return map[v] ?? 5;
-  }
-
-  // Converte faixa de lojas para o limite inteiro (teto da faixa)
-  function lojasParaInt(v: string): number {
-    const map: Record<string, number> = {
-      "1": 1,
-      "2-3": 3,
-      "4-10": 10,
-      "10+": 99,
-    };
-    return map[v] ?? 1;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -91,6 +74,7 @@ export default function CadastroPage() {
         password: form.senha,
         options: {
           data: { display_name: form.nome },
+          emailRedirectTo: "https://landing-altavendas.vercel.app/cadastro/confirmado",
         },
       });
 
@@ -107,91 +91,104 @@ export default function CadastroPage() {
         return;
       }
 
-      // Se o signUp não criou sessão automaticamente (email confirmation ativo),
-      // faz signIn para garantir que o token JWT está presente antes dos inserts
-      if (!authData.session) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+      // 2. Salvar dados extras no localStorage para o fluxo de confirmação
+      localStorage.setItem(
+        "av_pending_signup",
+        JSON.stringify({
+          userId,
+          nome: form.nome,
           email: form.email,
-          password: form.senha,
-        });
-        if (signInError) {
-          // Conta criada mas e-mail precisa ser confirmado — avisa o usuário
-          setError("Conta criada! Verifique seu e-mail para confirmar antes de continuar.");
-          setLoading(false);
-          return;
-        }
-      }
-
-      // 2. Inserir em organizations
-      const { data: orgData, error: orgError } = await supabase
-        .from("organizations")
-        .insert({
-          name: form.empresa,
-          plano: null,
-          limite_vendedores: vendedoresParaInt(form.vendedores),
-          limite_lojas: lojasParaInt(form.lojas),
+          telefone: form.telefone,
+          empresa: form.empresa,
+          vendedores: vendedoresParaInt(form.vendedores),
+          lojas: lojasParaInt(form.lojas),
+          segmento: form.segmento,
         })
-        .select("id")
-        .single();
+      );
 
-      if (orgError) {
-        console.error("Erro ao salvar organização:", orgError.message);
-        setError("Erro ao criar a organização. Tente novamente.");
-        setLoading(false);
-        return;
-      }
-
-      // 3. Inserir em profiles
-      const username = form.email.split("@")[0];
-
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({
-          id: userId,
+      // 3. Se já tem sessão (confirmação de e-mail desativada), insere direto
+      if (authData.session) {
+        await insertOrgAndProfile({
+          userId,
+          nome: form.nome,
           email: form.email,
-          org_id: orgData.id,
-          role: "admin",
-          display_name: form.nome,
-          username,
+          empresa: form.empresa,
+          vendedores: vendedoresParaInt(form.vendedores),
+          lojas: lojasParaInt(form.lojas),
         });
-
-      if (profileError) {
-        console.error("Erro ao salvar perfil:", profileError.message);
-        setError("Erro ao criar o perfil. Tente novamente.");
-        setLoading(false);
+        localStorage.removeItem("av_pending_signup");
+        window.location.href = "/dashboard";
         return;
       }
 
-      // 4. Redirecionar
-      router.push("/dashboard");
+      // 4. Sem sessão → mostra tela de verificação
+      setVerifyEmail(form.email);
+      setLoading(false);
     } catch {
       setError("Algo deu errado. Tente novamente em instantes.");
       setLoading(false);
     }
   }
 
+  // Tela de "verifique seu e-mail"
+  if (verifyEmail) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#FFF4EE] rounded-full blur-3xl opacity-50" />
+        </div>
+        <header className="relative z-10 flex items-center justify-between max-w-6xl mx-auto w-full px-6 py-5">
+          <Link href="/" className="flex flex-col leading-none" style={{ gap: "1px" }}>
+            <span className="font-syne font-extrabold text-[18px] text-[#0F0F0F] tracking-tight" style={{ letterSpacing: "-0.02em" }}>ALTA</span>
+            <span className="font-syne font-normal text-[18px] text-[#FF6B1A]" style={{ letterSpacing: "0.06em" }}>VENDAS</span>
+          </Link>
+        </header>
+        <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-10">
+          <div className="w-full max-w-md text-center">
+            <div className="bg-white border border-[#E5E5E5] rounded-2xl shadow-xl shadow-black/5 p-10">
+              <div className="w-16 h-16 bg-[#FFF4EE] rounded-full flex items-center justify-center mx-auto mb-6">
+                <Mail size={28} className="text-[#FF6B1A]" />
+              </div>
+              <h1 className="font-sora font-extrabold text-2xl text-[#0F0F0F] mb-3">
+                Verifique seu e-mail!
+              </h1>
+              <p className="font-dm text-sm text-[#888888] leading-relaxed mb-2">
+                Enviamos um link de confirmação para
+              </p>
+              <p className="font-dm font-semibold text-[#0F0F0F] text-sm mb-6">
+                {verifyEmail}
+              </p>
+              <p className="font-dm text-sm text-[#888888] leading-relaxed">
+                Clique no link no seu e-mail para ativar sua conta e começar o teste grátis.
+              </p>
+              <div className="mt-8 pt-6 border-t border-[#F0F0F0]">
+                <p className="font-dm text-xs text-[#AAAAAA]">
+                  Não recebeu?{" "}
+                  <button
+                    onClick={() => setVerifyEmail("")}
+                    className="text-[#FF6B1A] font-semibold hover:underline"
+                  >
+                    Voltar e tentar novamente
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Background blob */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#FFF4EE] rounded-full blur-3xl opacity-50" />
       </div>
 
-      {/* Header */}
       <header className="relative z-10 flex items-center justify-between max-w-6xl mx-auto w-full px-6 py-5">
         <Link href="/" className="flex flex-col leading-none" style={{ gap: "1px" }}>
-          <span
-            className="font-syne font-extrabold text-[18px] text-[#0F0F0F] tracking-tight"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            ALTA
-          </span>
-          <span
-            className="font-syne font-normal text-[18px] text-[#FF6B1A]"
-            style={{ letterSpacing: "0.06em" }}
-          >
-            VENDAS
-          </span>
+          <span className="font-syne font-extrabold text-[18px] text-[#0F0F0F] tracking-tight" style={{ letterSpacing: "-0.02em" }}>ALTA</span>
+          <span className="font-syne font-normal text-[18px] text-[#FF6B1A]" style={{ letterSpacing: "0.06em" }}>VENDAS</span>
         </Link>
         <p className="font-dm text-sm text-[#888888]">
           Já tem conta?{" "}
@@ -201,7 +198,6 @@ export default function CadastroPage() {
         </p>
       </header>
 
-      {/* Main */}
       <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-md">
           <div className="bg-white border border-[#E5E5E5] rounded-2xl shadow-xl shadow-black/5 p-8">
@@ -214,7 +210,6 @@ export default function CadastroPage() {
               </p>
             </div>
 
-            {/* Erro global */}
             {error && (
               <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 mb-5">
                 <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
@@ -223,103 +218,39 @@ export default function CadastroPage() {
             )}
 
             <form className="space-y-4" onSubmit={handleSubmit}>
-
-              {/* 1. Nome completo */}
               <div>
-                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  Nome completo
-                </label>
-                <input
-                  type="text"
-                  placeholder="João Silva"
-                  required
-                  value={form.nome}
-                  onChange={(e) => set("nome", e.target.value)}
-                  className={inputClass}
-                />
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">Nome completo</label>
+                <input type="text" placeholder="João Silva" required value={form.nome} onChange={(e) => set("nome", e.target.value)} className={inputClass} />
               </div>
 
-              {/* 2. Email */}
               <div>
-                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  E-mail
-                </label>
-                <input
-                  type="email"
-                  placeholder="joao@empresa.com"
-                  required
-                  value={form.email}
-                  onChange={(e) => set("email", e.target.value)}
-                  className={error && error.includes("e-mail") ? inputErrorClass : inputClass}
-                />
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">E-mail</label>
+                <input type="email" placeholder="joao@empresa.com" required value={form.email} onChange={(e) => set("email", e.target.value)} className={error && error.includes("e-mail") ? inputErrorClass : inputClass} />
               </div>
 
-              {/* 3. Senha */}
               <div>
-                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  Senha
-                </label>
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">Senha</label>
                 <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Mínimo 6 caracteres"
-                    required
-                    value={form.senha}
-                    onChange={(e) => set("senha", e.target.value)}
-                    className={`${error && error.includes("senha") ? inputErrorClass : inputClass} pr-12`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#AAAAAA] hover:text-[#444444] transition-colors"
-                  >
+                  <input type={showPassword ? "text" : "password"} placeholder="Mínimo 6 caracteres" required value={form.senha} onChange={(e) => set("senha", e.target.value)} className={`${error && error.includes("senha") ? inputErrorClass : inputClass} pr-12`} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#AAAAAA] hover:text-[#444444] transition-colors">
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
 
-              {/* 4. WhatsApp / Telefone */}
               <div>
-                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  WhatsApp / Telefone
-                </label>
-                <input
-                  type="tel"
-                  placeholder="(11) 99999-9999"
-                  required
-                  value={form.telefone}
-                  onChange={(e) => set("telefone", e.target.value)}
-                  className={inputClass}
-                />
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">WhatsApp / Telefone</label>
+                <input type="tel" placeholder="(11) 99999-9999" required value={form.telefone} onChange={(e) => set("telefone", e.target.value)} className={inputClass} />
               </div>
 
-              {/* 5. Nome da empresa */}
               <div>
-                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  Nome da empresa
-                </label>
-                <input
-                  type="text"
-                  placeholder="Minha Loja Ltda."
-                  required
-                  value={form.empresa}
-                  onChange={(e) => set("empresa", e.target.value)}
-                  className={inputClass}
-                />
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">Nome da empresa</label>
+                <input type="text" placeholder="Minha Loja Ltda." required value={form.empresa} onChange={(e) => set("empresa", e.target.value)} className={inputClass} />
               </div>
 
-              {/* 6. Número de vendedores */}
               <div>
-                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  Número de vendedores
-                </label>
-                <select
-                  required
-                  value={form.vendedores}
-                  onChange={(e) => set("vendedores", e.target.value)}
-                  className={selectClass}
-                  style={selectStyle}
-                >
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">Número de vendedores</label>
+                <select required value={form.vendedores} onChange={(e) => set("vendedores", e.target.value)} className={selectClass} style={selectStyle}>
                   <option value="" disabled>Selecione</option>
                   <option value="1-5">1 – 5 vendedores</option>
                   <option value="6-10">6 – 10 vendedores</option>
@@ -329,18 +260,9 @@ export default function CadastroPage() {
                 </select>
               </div>
 
-              {/* 7. Número de lojas */}
               <div>
-                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  Número de lojas
-                </label>
-                <select
-                  required
-                  value={form.lojas}
-                  onChange={(e) => set("lojas", e.target.value)}
-                  className={selectClass}
-                  style={selectStyle}
-                >
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">Número de lojas</label>
+                <select required value={form.lojas} onChange={(e) => set("lojas", e.target.value)} className={selectClass} style={selectStyle}>
                   <option value="" disabled>Selecione</option>
                   <option value="1">1 loja</option>
                   <option value="2-3">2 – 3 lojas</option>
@@ -349,18 +271,9 @@ export default function CadastroPage() {
                 </select>
               </div>
 
-              {/* 8. Segmento */}
               <div>
-                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  Segmento
-                </label>
-                <select
-                  required
-                  value={form.segmento}
-                  onChange={(e) => set("segmento", e.target.value)}
-                  className={selectClass}
-                  style={selectStyle}
-                >
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">Segmento</label>
+                <select required value={form.segmento} onChange={(e) => set("segmento", e.target.value)} className={selectClass} style={selectStyle}>
                   <option value="" disabled>Selecione</option>
                   <option value="moda">Moda</option>
                   <option value="veiculos">Veículos</option>
@@ -371,22 +284,11 @@ export default function CadastroPage() {
                 </select>
               </div>
 
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-orange w-full justify-center font-dm font-semibold text-base px-6 py-3.5 rounded-xl mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
+              <button type="submit" disabled={loading} className="btn-orange w-full justify-center font-dm font-semibold text-base px-6 py-3.5 rounded-xl mt-2 disabled:opacity-70 disabled:cursor-not-allowed">
                 {loading ? (
-                  <>
-                    <Loader2 size={18} className="ml-0 mr-2 animate-spin" />
-                    Criando conta...
-                  </>
+                  <><Loader2 size={18} className="ml-0 mr-2 animate-spin" />Criando conta...</>
                 ) : (
-                  <>
-                    Criar conta grátis — 7 dias grátis
-                    <ArrowRight size={18} className="ml-2" />
-                  </>
+                  <>Criar conta grátis — 7 dias grátis</>
                 )}
               </button>
 
@@ -397,18 +299,49 @@ export default function CadastroPage() {
 
             <p className="font-dm text-xs text-[#AAAAAA] text-center mt-5 leading-relaxed">
               Ao criar sua conta você concorda com os{" "}
-              <a href="#" className="underline hover:text-[#FF6B1A]">
-                Termos de Uso
-              </a>{" "}
-              e a{" "}
-              <a href="#" className="underline hover:text-[#FF6B1A]">
-                Política de Privacidade
-              </a>
-              .
+              <a href="#" className="underline hover:text-[#FF6B1A]">Termos de Uso</a>{" "}e a{" "}
+              <a href="#" className="underline hover:text-[#FF6B1A]">Política de Privacidade</a>.
             </p>
           </div>
         </div>
       </main>
     </div>
   );
+}
+
+// Função auxiliar exportada para reuso na página /confirmado
+export async function insertOrgAndProfile({
+  userId, nome, email, empresa, vendedores, lojas,
+}: {
+  userId: string;
+  nome: string;
+  email: string;
+  empresa: string;
+  vendedores: number;
+  lojas: number;
+}) {
+  const { data: orgData, error: orgError } = await supabase
+    .from("organizations")
+    .insert({ name: empresa, plano: null, limite_vendedores: vendedores, limite_lojas: lojas })
+    .select("id")
+    .single();
+
+  if (orgError) {
+    console.error("Erro ao salvar organização:", orgError.message);
+    return;
+  }
+
+  const username = email.split("@")[0];
+  const { error: profileError } = await supabase.from("profiles").insert({
+    id: userId,
+    email,
+    org_id: orgData.id,
+    role: "admin",
+    display_name: nome,
+    username,
+  });
+
+  if (profileError) {
+    console.error("Erro ao salvar perfil:", profileError.message);
+  }
 }
