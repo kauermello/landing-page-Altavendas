@@ -118,7 +118,7 @@ export default function CadastroPage() {
           lojas: lojasParaInt(form.lojas),
         });
         localStorage.removeItem("av_pending_signup");
-        window.location.href = "/dashboard";
+        window.location.href = "https://upvendas.app.br";
         return;
       }
 
