@@ -56,6 +56,29 @@ export default function CadastroPage() {
     setError("");
   }
 
+  // Converte faixa de vendedores para o limite inteiro (teto da faixa)
+  function vendedoresParaInt(v: string): number {
+    const map: Record<string, number> = {
+      "1-5": 5,
+      "6-10": 10,
+      "11-20": 20,
+      "21-50": 50,
+      "50+": 99,
+    };
+    return map[v] ?? 5;
+  }
+
+  // Converte faixa de lojas para o limite inteiro (teto da faixa)
+  function lojasParaInt(v: string): number {
+    const map: Record<string, number> = {
+      "1": 1,
+      "2-3": 3,
+      "4-10": 10,
+      "10+": 99,
+    };
+    return map[v] ?? 1;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -67,7 +90,7 @@ export default function CadastroPage() {
         email: form.email,
         password: form.senha,
         options: {
-          data: { full_name: form.nome },
+          data: { display_name: form.nome },
         },
       });
 
@@ -84,35 +107,44 @@ export default function CadastroPage() {
         return;
       }
 
-      // 2. Salvar organização
+      // 2. Inserir em organizations
       const { data: orgData, error: orgError } = await supabase
         .from("organizations")
         .insert({
           name: form.empresa,
-          vendors_range: form.vendedores,
-          stores_range: form.lojas,
-          segment: form.segmento,
-          owner_id: userId,
+          plano: null,
+          limite_vendedores: vendedoresParaInt(form.vendedores),
+          limite_lojas: lojasParaInt(form.lojas),
         })
         .select("id")
         .single();
 
       if (orgError) {
         console.error("Erro ao salvar organização:", orgError.message);
+        setError("Erro ao criar a organização. Tente novamente.");
+        setLoading(false);
+        return;
       }
 
-      // 3. Salvar perfil
+      // 3. Inserir em profiles
+      const username = form.email.split("@")[0];
+
       const { error: profileError } = await supabase
         .from("profiles")
         .insert({
           id: userId,
-          full_name: form.nome,
-          phone: form.telefone,
-          organization_id: orgData?.id ?? null,
+          email: form.email,
+          org_id: orgData.id,
+          role: "admin",
+          display_name: form.nome,
+          username,
         });
 
       if (profileError) {
         console.error("Erro ao salvar perfil:", profileError.message);
+        setError("Erro ao criar o perfil. Tente novamente.");
+        setLoading(false);
+        return;
       }
 
       // 4. Redirecionar
