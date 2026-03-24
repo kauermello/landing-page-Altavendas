@@ -162,7 +162,7 @@ export default function Pricing() {
                 </div>
 
                 <a
-                  href="#"
+                  href={plan.enterprise ? "#" : "/cadastro"}
                   className={`flex items-center justify-center gap-2 font-dm font-semibold text-sm py-3 px-4 rounded-xl mb-6 ${
                     plan.enterprise
                       ? "bg-[#F8F8F8] text-[#444444] border border-[#E5E5E5] hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-all"

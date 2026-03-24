@@ -26,7 +26,7 @@ export default function CTAFinal() {
 
         <Reveal delay={2} className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
-            href="#"
+            href="/cadastro"
             className="flex items-center gap-2 font-dm font-bold text-base bg-white px-8 py-4 rounded-xl shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5"
             style={{ color: "#FF6B1A" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.backgroundColor = "#FFF4EE"; }}
