@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Eye, EyeOff, AlertCircle, Loader2, Mail } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { insertOrgAndProfile } from "@/lib/signup-helpers";
 
 const selectClass =
   "w-full font-dm text-sm text-[#0F0F0F] bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/10 transition-all appearance-none cursor-pointer";
@@ -309,39 +310,3 @@ export default function CadastroPage() {
   );
 }
 
-// Função auxiliar exportada para reuso na página /confirmado
-export async function insertOrgAndProfile({
-  userId, nome, email, empresa, vendedores, lojas,
-}: {
-  userId: string;
-  nome: string;
-  email: string;
-  empresa: string;
-  vendedores: number;
-  lojas: number;
-}) {
-  const { data: orgData, error: orgError } = await supabase
-    .from("organizations")
-    .insert({ name: empresa, plano: null, limite_vendedores: vendedores, limite_lojas: lojas })
-    .select("id")
-    .single();
-
-  if (orgError) {
-    console.error("Erro ao salvar organização:", orgError.message);
-    return;
-  }
-
-  const username = email.split("@")[0];
-  const { error: profileError } = await supabase.from("profiles").insert({
-    id: userId,
-    email,
-    org_id: orgData.id,
-    role: "admin",
-    display_name: nome,
-    username,
-  });
-
-  if (profileError) {
-    console.error("Erro ao salvar perfil:", profileError.message);
-  }
-}

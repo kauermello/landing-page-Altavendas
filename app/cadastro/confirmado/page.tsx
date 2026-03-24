@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { insertOrgAndProfile } from "../page";
+import { insertOrgAndProfile } from "@/lib/signup-helpers";
 
 type Status = "loading" | "success" | "error";
 
