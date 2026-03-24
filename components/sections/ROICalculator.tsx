@@ -232,7 +232,7 @@ export default function ROICalculator() {
 
               {/* CTA */}
               <a
-                href="#"
+                href="/cadastro"
                 className="btn-orange flex items-center justify-center gap-2 font-dm font-semibold text-base px-6 py-3.5 rounded-xl w-full"
               >
                 Começar agora e capturar esse resultado

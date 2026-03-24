@@ -18,7 +18,15 @@
       "Bash(pandoc \"C:\\\\Users\\\\kauer\\\\Downloads\\\\roteiro AltaVendas \\(1\\).docx\" -o output.md)",
       "Bash(python \"C:\\\\Users\\\\kauer\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\d33cb889-e6c7-477b-9cdd-9cd70fb29d65\\\\63ae575d-9b82-48f5-9c35-9c08969dd122\\\\skills\\\\docx\\\\scripts\\\\office\\\\unpack.py\" \"C:\\\\Users\\\\kauer\\\\Downloads\\\\roteiro AltaVendas \\(1\\).docx\" \"C:\\\\Users\\\\kauer\\\\Downloads\\\\roteiro_unpacked\")",
       "Bash(node -e \":*)",
-      "Bash(npm list:*)"
+      "Bash(npm list:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl -s \"https://dyqmmftsdkysfquoybkx.supabase.co/rest/v1/organizations?select=*&limit=0\" -H \"apikey: sb_publishable_YaVnUK5RYbUm28skLJ9p1g_RAQ092Jw\" -H \"Authorization: Bearer sb_publishable_YaVnUK5RYbUm28skLJ9p1g_RAQ092Jw\" -I)",
+      "Bash(curl -s \"https://dyqmmftsdkysfquoybkx.supabase.co/rest/v1/organizations?limit=1\" -H \"apikey: sb_publishable_YaVnUK5RYbUm28skLJ9p1g_RAQ092Jw\" -H \"Authorization: Bearer sb_publishable_YaVnUK5RYbUm28skLJ9p1g_RAQ092Jw\" -H \"Accept: application/json\")",
+      "Bash(__NEW_LINE_c3cf534f26d98a2f__ curl:*)",
+      "Bash(curl -s \"https://dyqmmftsdkysfquoybkx.supabase.co/rest/v1/\" -H \"apikey: sb_publishable_YaVnUK5RYbUm28skLJ9p1g_RAQ092Jw\" -H \"Authorization: Bearer sb_publishable_YaVnUK5RYbUm28skLJ9p1g_RAQ092Jw\" -H \"Accept: application/json\")"
     ]
   }
 }

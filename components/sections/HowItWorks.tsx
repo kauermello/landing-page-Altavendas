@@ -71,7 +71,7 @@ export default function HowItWorks() {
 
         <Reveal delay={1} className="flex justify-center mt-14">
           <a
-            href="#"
+            href="/cadastro"
             className="btn-orange font-dm font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-orange-200"
           >
             Começar agora — é grátis

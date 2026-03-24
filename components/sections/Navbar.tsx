@@ -58,13 +58,13 @@ export default function Navbar() {
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
             <a
-              href="#"
+              href="/login"
               className="font-dm text-sm font-medium text-[#444444] px-4 py-2 border border-[#E5E5E5] rounded-lg hover:border-[#FF6B1A] hover:text-[#FF6B1A] transition-all"
             >
               Login
             </a>
             <a
-              href="#"
+              href="/cadastro"
               className="btn-orange font-dm text-sm font-semibold px-5 py-2 rounded-lg"
             >
               Começar grátis
@@ -96,13 +96,13 @@ export default function Navbar() {
           ))}
           <div className="flex flex-col gap-2 pt-2 border-t border-[#E5E5E5]">
             <a
-              href="#"
+              href="/login"
               className="font-dm text-sm font-medium text-center text-[#444444] px-4 py-2.5 border border-[#E5E5E5] rounded-lg"
             >
               Login
             </a>
             <a
-              href="#"
+              href="/cadastro"
               className="font-dm text-sm font-semibold text-center text-white bg-[#FF6B1A] px-5 py-2.5 rounded-lg"
             >
               Começar grátis

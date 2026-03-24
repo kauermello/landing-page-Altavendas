@@ -64,7 +64,7 @@ export default function Hero() {
           animate="visible"
           className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4"
         >
-          <a href="#" className="btn-orange flex items-center gap-2 font-dm font-semibold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-orange-200">
+          <a href="/cadastro" className="btn-orange flex items-center gap-2 font-dm font-semibold text-base px-7 py-3.5 rounded-xl shadow-lg shadow-orange-200">
             Começar teste grátis
             <ArrowRight size={18} />
           </a>
