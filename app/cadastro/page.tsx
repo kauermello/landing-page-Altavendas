@@ -107,6 +107,21 @@ export default function CadastroPage() {
         return;
       }
 
+      // Se o signUp não criou sessão automaticamente (email confirmation ativo),
+      // faz signIn para garantir que o token JWT está presente antes dos inserts
+      if (!authData.session) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: form.email,
+          password: form.senha,
+        });
+        if (signInError) {
+          // Conta criada mas e-mail precisa ser confirmado — avisa o usuário
+          setError("Conta criada! Verifique seu e-mail para confirmar antes de continuar.");
+          setLoading(false);
+          return;
+        }
+      }
+
       // 2. Inserir em organizations
       const { data: orgData, error: orgError } = await supabase
         .from("organizations")
