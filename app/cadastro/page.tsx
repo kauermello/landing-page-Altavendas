@@ -4,8 +4,20 @@ import { useState } from "react";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
+const selectClass =
+  "w-full font-dm text-sm text-[#0F0F0F] bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/10 transition-all appearance-none cursor-pointer";
+
+const selectStyle = {
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+  backgroundRepeat: "no-repeat" as const,
+  backgroundPosition: "right 16px center",
+};
+
+const inputClass =
+  "w-full font-dm text-sm text-[#0F0F0F] placeholder:text-[#BBBBBB] bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/10 transition-all";
+
 export default function CadastroPage() {
-  const [vendedores, setVendedores] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -55,7 +67,8 @@ export default function CadastroPage() {
 
             {/* Form */}
             <form className="space-y-4">
-              {/* Nome */}
+
+              {/* 1. Nome completo */}
               <div>
                 <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
                   Nome completo
@@ -63,11 +76,12 @@ export default function CadastroPage() {
                 <input
                   type="text"
                   placeholder="João Silva"
-                  className="w-full font-dm text-sm text-[#0F0F0F] placeholder:text-[#BBBBBB] bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/10 transition-all"
+                  required
+                  className={inputClass}
                 />
               </div>
 
-              {/* Email */}
+              {/* 2. Email */}
               <div>
                 <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
                   E-mail
@@ -75,23 +89,47 @@ export default function CadastroPage() {
                 <input
                   type="email"
                   placeholder="joao@empresa.com"
-                  className="w-full font-dm text-sm text-[#0F0F0F] placeholder:text-[#BBBBBB] bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/10 transition-all"
+                  required
+                  className={inputClass}
                 />
               </div>
 
-              {/* Telefone */}
+              {/* 3. Senha */}
               <div>
                 <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
-                  Telefone / WhatsApp
+                  Senha
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Mínimo 8 caracteres"
+                    required
+                    className={`${inputClass} pr-12`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#AAAAAA] hover:text-[#444444] transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* 4. WhatsApp / Telefone */}
+              <div>
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
+                  WhatsApp / Telefone
                 </label>
                 <input
                   type="tel"
                   placeholder="(11) 99999-9999"
-                  className="w-full font-dm text-sm text-[#0F0F0F] placeholder:text-[#BBBBBB] bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/10 transition-all"
+                  required
+                  className={inputClass}
                 />
               </div>
 
-              {/* Nome da empresa */}
+              {/* 5. Nome da empresa */}
               <div>
                 <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
                   Nome da empresa
@@ -99,33 +137,53 @@ export default function CadastroPage() {
                 <input
                   type="text"
                   placeholder="Minha Loja Ltda."
-                  className="w-full font-dm text-sm text-[#0F0F0F] placeholder:text-[#BBBBBB] bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/10 transition-all"
+                  required
+                  className={inputClass}
                 />
               </div>
 
-              {/* Número de vendedores */}
+              {/* 6. Número de vendedores */}
               <div>
                 <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
                   Número de vendedores
                 </label>
-                <select
-                  value={vendedores}
-                  onChange={(e) => setVendedores(e.target.value)}
-                  className="w-full font-dm text-sm text-[#0F0F0F] bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FF6B1A] focus:ring-2 focus:ring-[#FF6B1A]/10 transition-all appearance-none cursor-pointer"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "right 16px center",
-                  }}
-                >
-                  <option value="" disabled>
-                    Selecione
-                  </option>
-                  {Array.from({ length: 50 }, (_, i) => i + 1).map((n) => (
-                    <option key={n} value={n}>
-                      {n} {n === 1 ? "vendedor" : "vendedores"}
-                    </option>
-                  ))}
+                <select required className={selectClass} style={selectStyle} defaultValue="">
+                  <option value="" disabled>Selecione</option>
+                  <option value="1-5">1 – 5 vendedores</option>
+                  <option value="6-10">6 – 10 vendedores</option>
+                  <option value="11-20">11 – 20 vendedores</option>
+                  <option value="21-50">21 – 50 vendedores</option>
+                  <option value="50+">50+ vendedores</option>
+                </select>
+              </div>
+
+              {/* 7. Número de lojas */}
+              <div>
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
+                  Número de lojas
+                </label>
+                <select required className={selectClass} style={selectStyle} defaultValue="">
+                  <option value="" disabled>Selecione</option>
+                  <option value="1">1 loja</option>
+                  <option value="2-3">2 – 3 lojas</option>
+                  <option value="4-10">4 – 10 lojas</option>
+                  <option value="10+">10+ lojas</option>
+                </select>
+              </div>
+
+              {/* 8. Segmento */}
+              <div>
+                <label className="block font-dm text-sm font-medium text-[#444444] mb-1.5">
+                  Segmento
+                </label>
+                <select required className={selectClass} style={selectStyle} defaultValue="">
+                  <option value="" disabled>Selecione</option>
+                  <option value="moda">Moda</option>
+                  <option value="veiculos">Veículos</option>
+                  <option value="eletronicos">Eletrônicos</option>
+                  <option value="calcados">Calçados</option>
+                  <option value="alimentacao">Alimentação</option>
+                  <option value="outro">Outro</option>
                 </select>
               </div>
 
@@ -134,9 +192,14 @@ export default function CadastroPage() {
                 type="submit"
                 className="btn-orange w-full justify-center font-dm font-semibold text-base px-6 py-3.5 rounded-xl mt-2"
               >
-                Criar conta grátis
+                Criar conta grátis — 7 dias grátis
                 <ArrowRight size={18} className="ml-2" />
               </button>
+
+              {/* Below button note */}
+              <p className="font-dm text-xs text-[#888888] text-center">
+                Sem cartão de crédito. Cancele quando quiser.
+              </p>
             </form>
 
             {/* Terms */}
