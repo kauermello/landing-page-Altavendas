@@ -118,7 +118,10 @@ export default function CadastroPage() {
           lojas: lojasParaInt(form.lojas),
         });
         localStorage.removeItem("av_pending_signup");
-        window.location.href = "https://upvendas.app.br";
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData.session?.access_token ?? "";
+        const refreshToken = sessionData.session?.refresh_token ?? "";
+        window.location.href = `https://upvendas.app.br/auth/callback#access_token=${accessToken}&refresh_token=${refreshToken}`;
         return;
       }
 

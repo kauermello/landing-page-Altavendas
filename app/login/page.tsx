@@ -40,7 +40,7 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const { data: signInData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password: senha,
     });
@@ -51,7 +51,10 @@ export default function LoginPage() {
       return;
     }
 
-    window.location.href = "https://upvendas.app.br";
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token ?? "";
+    const refreshToken = sessionData.session?.refresh_token ?? "";
+    window.location.href = `https://upvendas.app.br/auth/callback#access_token=${accessToken}&refresh_token=${refreshToken}`;
   }
 
   return (
