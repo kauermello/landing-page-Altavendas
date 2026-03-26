@@ -66,7 +66,7 @@ export default function LoginPage() {
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData.session?.access_token ?? "";
     const refreshToken = sessionData.session?.refresh_token ?? "";
-    window.location.href = `https://upvendas.app.br/auth/callback#access_token=${accessToken}&refresh_token=${refreshToken}`;
+    window.location.href = `https://upvendas.app.br/auth/callback#access_token=${accessToken}&refresh_token=${refreshToken}&type=recovery`;
   }
 
   return (
