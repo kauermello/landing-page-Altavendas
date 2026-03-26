@@ -40,16 +40,28 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
+    // Debug: verifica se as variáveis de ambiente estão sendo lidas
+    console.log("[AltaVendas] SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("[AltaVendas] SUPABASE_ANON_KEY:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "✅ presente" : "❌ ausente");
+
     const { data: signInData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password: senha,
     });
 
     if (authError) {
+      // Debug: loga o erro completo para diagnóstico
+      console.error("[AltaVendas] Erro no login:", {
+        message: authError.message,
+        status: authError.status,
+        name: authError.name,
+      });
       setError(friendlyError(authError.message));
       setLoading(false);
       return;
     }
+
+    console.log("[AltaVendas] Login bem-sucedido:", signInData.user?.email);
 
     const { data: sessionData } = await supabase.auth.getSession();
     const accessToken = sessionData.session?.access_token ?? "";
