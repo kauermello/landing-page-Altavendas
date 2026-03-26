@@ -49,24 +49,24 @@ export default function LoginPage() {
       password: senha,
     });
 
+    // Debug: loga resultado completo do signInWithPassword
+    console.log("[AltaVendas] signInWithPassword → data:", JSON.stringify(signInData, null, 2));
+    console.log("[AltaVendas] signInWithPassword → error:", JSON.stringify(authError, null, 2));
+
     if (authError) {
-      // Debug: loga o erro completo para diagnóstico
-      console.error("[AltaVendas] Erro no login:", {
-        message: authError.message,
-        status: authError.status,
-        name: authError.name,
-      });
       setError(friendlyError(authError.message));
       setLoading(false);
       return;
     }
 
-    console.log("[AltaVendas] Login bem-sucedido:", signInData.user?.email);
-
     const { data: sessionData } = await supabase.auth.getSession();
+    console.log("[AltaVendas] getSession → session:", JSON.stringify(sessionData.session, null, 2));
+
     const accessToken = sessionData.session?.access_token ?? "";
     const refreshToken = sessionData.session?.refresh_token ?? "";
-    window.location.href = `https://upvendas.app.br/auth/callback#access_token=${accessToken}&refresh_token=${refreshToken}&type=recovery`;
+    const redirectUrl = `https://upvendas.app.br/auth/callback#access_token=${accessToken}&refresh_token=${refreshToken}&type=recovery`;
+    console.log("[AltaVendas] Redirecionando para:", redirectUrl);
+    window.location.href = redirectUrl;
   }
 
   return (
