@@ -74,8 +74,16 @@ export default function CadastroPage() {
         email: form.email,
         password: form.senha,
         options: {
-          data: { display_name: form.nome },
-          emailRedirectTo: "https://landing-altavendas.vercel.app/cadastro/confirmado",
+          emailRedirectTo: "https://upvendas.app.br/auth/callback",
+          data: {
+            display_name: form.nome,
+            full_name: form.nome,
+            empresa: form.empresa,
+            vendedores: form.vendedores,
+            lojas: form.lojas,
+            segmento: form.segmento,
+            telefone: form.telefone,
+          },
         },
       });
 
